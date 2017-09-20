@@ -15,7 +15,6 @@ namespace Gorzdrav.Core.ViewModels
         #region Fields
         
         private readonly IHubService _service;
-        private IDbService _dbService;
 
         #endregion
 
@@ -47,9 +46,9 @@ namespace Gorzdrav.Core.ViewModels
         {
             _service = service ?? Locator.CurrentMutable.GetService<IHubService>();
 
-            _dbService = dbService ?? Locator.CurrentMutable.GetService<IDbService>();
+            dbService = dbService ?? Locator.CurrentMutable.GetService<IDbService>();
 
-            Patient = _dbService.SelectedPatient;
+            Patient = dbService.SelectedPatient;
 
             var hasPatient = this.WhenAnyValue(x => x.Patient).Select(x => x != null);
 
@@ -71,7 +70,7 @@ namespace Gorzdrav.Core.ViewModels
             var d4 = this.WhenAnyValue(x => x.Patient)
                          .Skip(1)
                          .DistinctUntilChanged()
-                         .BindTo(_dbService, x => x.SelectedPatient);
+                         .BindTo(dbService, x => x.SelectedPatient);
 
             var canInitialize = this.WhenAnyValue(x => x.Patient).Select(x => x == null).DistinctUntilChanged();
             
