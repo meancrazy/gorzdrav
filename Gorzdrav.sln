@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorzdrav", "Gorzdrav\Gorzdrav.csproj", "{60F25324-50B9-4E11-9273-7BAF48F06EF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorzdrav.Core", "Gorzdrav.Core\Gorzdrav.Core.csproj", "{F5191311-055F-4FA9-B878-30214439FC54}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60F25324-50B9-4E11-9273-7BAF48F06EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F25324-50B9-4E11-9273-7BAF48F06EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F25324-50B9-4E11-9273-7BAF48F06EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F25324-50B9-4E11-9273-7BAF48F06EF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5191311-055F-4FA9-B878-30214439FC54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5191311-055F-4FA9-B878-30214439FC54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5191311-055F-4FA9-B878-30214439FC54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5191311-055F-4FA9-B878-30214439FC54}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7722EF1D-C198-410E-95D5-E1260F4C454A}
+	EndGlobalSection
+EndGlobal

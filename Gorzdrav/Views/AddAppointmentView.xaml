@@ -1,0 +1,74 @@
+﻿<dialogs:CustomDialog x:Class="Gorzdrav.Views.AddAppointmentView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:viewModels="clr-namespace:Gorzdrav.Core.ViewModels;assembly=Gorzdrav.Core"
+                      mc:Ignorable="d"
+                      d:DataContext="{d:DesignInstance {x:Type viewModels:AddAppointmentViewModel}, d:IsDesignTimeCreatable=False}">
+    <dialogs:CustomDialog.Content>
+        <Grid Margin="0 10 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="200" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                   Style="{DynamicResource DescriptionHeaderStyle}"
+                   Content="Доступные талоны"/>
+            <ComboBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                      controls:TextBoxHelper.Watermark="Специальность"
+                      ItemsSource="{Binding Specialties, Mode=OneWay}"
+                      SelectedItem="{Binding Specialty}"
+                      Margin="0,0,0,4"
+                      DisplayMemberPath="Name"
+                      Style="{DynamicResource VirtualisedMetroComboBox}"
+                      controls:TextBoxHelper.UseFloatingWatermark="True"
+                      controls:ComboBoxHelper.CharacterCasing="Normal">
+            </ComboBox>
+            <ComboBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                      controls:TextBoxHelper.Watermark="Врач"
+                      ItemsSource="{Binding Doctors, Mode=OneWay}"
+                      SelectedItem="{Binding Doctor}"
+                      Margin="0,0,0,4"
+                      DisplayMemberPath="Name"
+                      Style="{DynamicResource VirtualisedMetroComboBox}"
+                      controls:TextBoxHelper.UseFloatingWatermark="True">
+            </ComboBox>
+            <ListView Grid.Row="7" Grid.Column="1" BorderThickness="1" 
+                      BorderBrush="{DynamicResource TextBoxBorderBrush}"
+                      ItemsSource="{Binding Appointments, Mode=OneWay}"
+                      SelectedItem="{Binding Appointment, Mode=OneWayToSource}">
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
+                        <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding DateTime, StringFormat=\{0:dd.MM.yyyy\}}"/>
+                        <GridViewColumn Header="Время" DisplayMemberBinding="{Binding DateTime, StringFormat=\{0:HH:mm\}}"/>
+                    </GridView>
+                </ListView.View>
+                </ListView>
+        </Grid>
+    </dialogs:CustomDialog.Content>
+    <dialogs:CustomDialog.DialogBottom>
+        <StackPanel Height="45" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Height="35" MinWidth="80" Margin="0 0 5 0"
+                    Command="{Binding Select}"
+                    Style="{DynamicResource AccentedSquareButtonStyle}"
+                    controls:ControlsHelper.ContentCharacterCasing="Normal"
+                    Content="Добавить"/>
+            <Button Height="35" MinWidth="80" Margin="0 0 5 0"
+                    Command="{Binding Cancel}"
+                    Content="Отмена"/>
+        </StackPanel>
+    </dialogs:CustomDialog.DialogBottom>
+</dialogs:CustomDialog>

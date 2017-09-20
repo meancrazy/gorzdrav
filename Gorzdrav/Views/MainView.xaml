@@ -1,0 +1,60 @@
+﻿<ma:MetroWindow x:Class="Gorzdrav.Views.MainView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:ma="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:rxui="http://reactiveui.net"
+                      xmlns:vm="clr-namespace:Gorzdrav.Core.ViewModels;assembly=Gorzdrav.Core"
+                      mc:Ignorable="d"
+                      Title="Самозапись" Height="400" Width="800"
+                      d:DataContext="{d:DesignInstance {x:Type vm:MainViewModel}, d:IsDesignTimeCreatable=False}"
+                      TitleCharacterCasing="Normal"
+                      BorderThickness="1"
+                      BorderBrush="{DynamicResource AccentColorBrush}"
+                      SaveWindowPosition="True"
+                      ResizeMode="CanResizeWithGrip"
+                      ShowDialogsOverTitleBar="False"
+                      RightWindowCommandsOverlayBehavior="Always"
+                      SnapsToDevicePixels="True">
+    <ma:MetroWindow.RightWindowCommands>
+        <ma:WindowCommands>
+            <ToggleButton Content="Настройки" IsChecked="{Binding ElementName=SettingsFlyout, Path=IsOpen}" Cursor="Hand"/>
+        </ma:WindowCommands>
+    </ma:MetroWindow.RightWindowCommands>
+    <ma:MetroWindow.Flyouts>
+        <ma:FlyoutsControl>
+            <ma:Flyout Name="SettingsFlyout" Header="Настройки" Position="Right" Width="600" Theme="Inverse" CloseButtonVisibility="Collapsed">
+                <rxui:ViewModelViewHost />
+            </ma:Flyout>
+        </ma:FlyoutsControl>
+    </ma:MetroWindow.Flyouts>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}" Content="{Binding Patient.FullName}" />
+        <Label Grid.Row="1" Style="{DynamicResource DescriptionHeaderStyle}" Content="{Binding Patient.Clinic.Name}" />
+        <ToolBar Grid.Row="2" Height="32" >
+            <Button Content="Добавить" Command="{Binding AddAppointment}" CommandParameter="{Binding Patient}" />
+            <Button Content="Удалить" Command="{Binding DeleteAppointment}" CommandParameter="{Binding HistoryVisit}" />
+            <Button Content="Обновить" Command="{Binding GetAppointments}" />
+        </ToolBar>
+        <ListView Grid.Row="3" Name="HistoryVisits" BorderThickness="1" 
+                  BorderBrush="{DynamicResource TextBoxBorderBrush}"
+                  Margin="10,10,10,30"
+                  ItemsSource="{Binding HistoryVisits, Mode=OneWay}"
+                  SelectedItem="{Binding HistoryVisit, Mode=OneWayToSource}">
+            <ListView.View>
+                <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
+                    <GridViewColumn Header="Время" DisplayMemberBinding="{Binding VisitStart, StringFormat=\{0:dd.MM.yyyy HH:mm\}}" />
+                    <GridViewColumn Header="Врач" DisplayMemberBinding="{Binding DoctorRendingConsultation.Name}" />
+                    <GridViewColumn Header="Специальность" DisplayMemberBinding="{Binding SpecialityRendingConsultation.NameSpesiality}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</ma:MetroWindow>
