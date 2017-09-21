@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Gorzdrav.Core.Api;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Splat;
 
 namespace Gorzdrav.Core.ViewModels
 {
@@ -15,8 +14,6 @@ namespace Gorzdrav.Core.ViewModels
     {
         #region Fields
         
-        private readonly IHubService _service;
-
         private readonly PatientViewModel _patient;
 
         #endregion
@@ -57,11 +54,9 @@ namespace Gorzdrav.Core.ViewModels
 
         #endregion
 
-        public AddAppointmentViewModel(PatientViewModel patient, IHubService service = null)
+        public AddAppointmentViewModel(PatientViewModel patient, IHubService service = null) : base(service)
         {
             _patient = patient;
-
-            _service = service ?? Locator.CurrentMutable.GetService<IHubService>();
 
             GetSpecialties = ReactiveCommand.CreateFromTask(GetSpecialtiesImpl);
 
@@ -91,9 +86,9 @@ namespace Gorzdrav.Core.ViewModels
 
                     Doctors.AddRange(list);
 
-                    if (Doctors.Count == 1)
+                    if (Doctors.Count(x => x.Tickets > 0) == 1)
                     {
-                        Doctor = Doctors[0];
+                        Doctor = Doctors.First(x => x.Tickets > 0);
                     }
                 }
             });
@@ -130,7 +125,13 @@ namespace Gorzdrav.Core.ViewModels
 
             var d8 = Specialties.ShouldReset.Merge(Doctors.ShouldReset).Subscribe();
 
-            InitCleanup(d0, d1, d2, d3, d5, d4, d6, d7, d8);
+            var d9 = GetSpecialties.ThrownExceptions
+                                   .Merge(GetDoctors.ThrownExceptions)
+                                   .Merge(GetAppointments.ThrownExceptions)
+                                   .SelectMany(x => Interactions.Exceptions.Handle(x))
+                                   .Subscribe();
+
+            InitCleanup(d0, d1, d2, d3, d5, d4, d6, d7, d8, d9);
         }
 
         private async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsImpl()
@@ -138,7 +139,7 @@ namespace Gorzdrav.Core.ViewModels
             if (Doctor == null)
                 return null;
 
-            var result = await _service.GetAvaibleAppointmentsAsync(Doctor.Id, _patient.Clinic.Id, _patient.Id, DateTime.Today, DateTime.Today.AddMonths(1).AddDays(-1), Consts.Id, null);
+            var result = await Service.GetAvaibleAppointmentsAsync(Doctor.Id, _patient.Clinic.Id, _patient.Id, DateTime.Today, DateTime.Today.AddMonths(1).AddDays(-1), Consts.Id, null);
 
             return result.ListAppointments.Select(x => new AppointmentViewModel(x.IdAppointment, x.VisitStart, Doctor));
         }
@@ -148,15 +149,15 @@ namespace Gorzdrav.Core.ViewModels
             if (specialty == null)
                 return null;
 
-            var result = await _service.GetDoctorListAsync(specialty.Id, _patient.Clinic.Id, _patient.Id, Consts.Id, null);
-            return result.Docs.Where(x => x.CountFreeParticipantIE > 0).Select(x => new DoctorViewModel(x.IdDoc, x.Name, Specialty, x.CountFreeParticipantIE));
+            var result = await Service.GetDoctorListAsync(specialty.Id, _patient.Clinic.Id, _patient.Id, Consts.Id, null);
+            return result.Docs.Select(x => new DoctorViewModel(x.IdDoc, x.Name, Specialty, x.CountFreeParticipantIE));
         }
 
         private async Task<IEnumerable<SpecialtyViewModel>> GetSpecialtiesImpl()
         {
-            var result = await _service.GetSpesialityListAsync(_patient.Clinic.Id, _patient.Id, Consts.Id, null);
+            var result = await Service.GetSpesialityListAsync(_patient.Clinic.Id, _patient.Id, Consts.Id, null);
 
-            return result.ListSpesiality.Where(x => x.CountFreeParticipantIE > 0).Select(x => new SpecialtyViewModel(x.IdSpesiality, x.NameSpesiality));
+            return result.ListSpesiality.Select(x => new SpecialtyViewModel(x.IdSpesiality, x.NameSpesiality, x.CountFreeParticipantIE));
         }
     }
 }

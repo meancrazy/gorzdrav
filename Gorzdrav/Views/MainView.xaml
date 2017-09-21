@@ -6,6 +6,7 @@
                       xmlns:ma="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:rxui="http://reactiveui.net"
                       xmlns:vm="clr-namespace:Gorzdrav.Core.ViewModels;assembly=Gorzdrav.Core"
+                      xmlns:views="clr-namespace:Gorzdrav.Views"
                       mc:Ignorable="d"
                       Title="Самозапись" Height="400" Width="800"
                       d:DataContext="{d:DesignInstance {x:Type vm:MainViewModel}, d:IsDesignTimeCreatable=False}"
@@ -25,7 +26,7 @@
     <ma:MetroWindow.Flyouts>
         <ma:FlyoutsControl>
             <ma:Flyout Name="SettingsFlyout" Header="Настройки" Position="Right" Width="600" Theme="Inverse" CloseButtonVisibility="Collapsed">
-                <rxui:ViewModelViewHost />
+                <views:SettingsView DataContext="{Binding Settings}"/>
             </ma:Flyout>
         </ma:FlyoutsControl>
     </ma:MetroWindow.Flyouts>
@@ -36,14 +37,14 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}" Content="{Binding Patient.FullName}" />
-        <Label Grid.Row="1" Style="{DynamicResource DescriptionHeaderStyle}" Content="{Binding Patient.Clinic.Name}" />
+        <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}" Content="{Binding Settings.SelectedPatient.FullName}" />
+        <Label Grid.Row="1" Style="{DynamicResource DescriptionHeaderStyle}" Content="{Binding Settings.SelectedPatient.Clinic.Name}" />
         <ToolBar Grid.Row="2" Height="32" >
-            <Button Content="Добавить" Command="{Binding AddAppointment}" CommandParameter="{Binding Patient}" />
+            <Button Content="Добавить" Command="{Binding AddAppointment}" CommandParameter="{Binding Settings.SelectedPatient}" />
             <Button Content="Удалить" Command="{Binding DeleteAppointment}" CommandParameter="{Binding HistoryVisit}" />
             <Button Content="Обновить" Command="{Binding GetAppointments}" />
         </ToolBar>
-        <ListView Grid.Row="3" Name="HistoryVisits" BorderThickness="1" 
+        <ListView Grid.Row="3" BorderThickness="1" 
                   BorderBrush="{DynamicResource TextBoxBorderBrush}"
                   Margin="10,10,10,30"
                   ItemsSource="{Binding HistoryVisits, Mode=OneWay}"

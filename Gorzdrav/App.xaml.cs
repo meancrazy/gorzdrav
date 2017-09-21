@@ -1,28 +1,21 @@
-﻿using System.Reactive;
-using System.Reactive.Linq;
-using System.Windows;
+﻿using System.Windows;
+using Gorzdrav.Core;
+using Gorzdrav.Core.Api;
 using Gorzdrav.Core.ViewModels;
 using Gorzdrav.Views;
 using ReactiveUI;
+using Splat;
 
 namespace Gorzdrav
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App
     {
         private void Initialize(object sender, StartupEventArgs args)
         {
-            var bootstrapper = new AppBootstrapper();
-            bootstrapper.Initialize();
-
-            Observable.FromEventPattern<ExitEventHandler, ExitEventArgs>(e => Exit += e, e => Exit -= e)
-                      .Select(_ => Unit.Default)
-                      .InvokeCommand(bootstrapper.Exit);
-
+            Locator.CurrentMutable.InitializeReactiveUI();
+            Locator.CurrentMutable.RegisterConstant(new HubServiceClient("BasicHttpBinding_IHubService", Consts.Url), typeof(IHubService));
+            
             var viewModel = new MainViewModel();
-
             var mainView = new MainView(viewModel);
 
             mainView.Show();

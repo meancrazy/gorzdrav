@@ -11,9 +11,6 @@ using ReactiveUI;
 
 namespace Gorzdrav.Views
 {
-    /// <summary>
-    /// Interaction logic for MainView.xaml
-    /// </summary>
     public partial class MainView : IViewFor<MainViewModel>
     {
         public MainView(MainViewModel viewModel)
@@ -27,10 +24,18 @@ namespace Gorzdrav.Views
 
         private IEnumerable<IDisposable> Initialize()
         {
+            yield return Interactions.Exceptions.RegisterHandler(ShowException);
             yield return Interactions.AddPatient.RegisterHandler(ShowAddPatientView);
             yield return Interactions.AddAppointment.RegisterHandler(ShowAddAppointmentView);
 
             yield return Observable.Return(Unit.Default).InvokeCommand(ViewModel, x => x.AddPatient);
+        }
+
+        private async Task ShowException(InteractionContext<Exception, Unit> interaction)
+        {
+            await this.ShowMessageAsync("Ошибка", interaction.Input.Message);
+
+            interaction.SetOutput(Unit.Default);
         }
 
         private async Task ShowAddAppointmentView(InteractionContext<PatientViewModel, AppointmentViewModel> interaction)

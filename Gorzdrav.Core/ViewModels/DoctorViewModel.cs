@@ -1,15 +1,13 @@
-﻿using ReactiveUI.Fody.Helpers;
-
-namespace Gorzdrav.Core.ViewModels
+﻿namespace Gorzdrav.Core.ViewModels
 {
     public class DoctorViewModel
     {
-        public DoctorViewModel(string id, string name, SpecialtyViewModel specialty, int availableAppointmentsCount)
+        public DoctorViewModel(string id, string name, SpecialtyViewModel specialty, int tickets)
         {
             Id = id;
             Name = name;
             Specialty = specialty;
-            AvailableAppointmentsCount = availableAppointmentsCount;
+            Tickets = tickets;
         }
         
         public string Id { get;  }
@@ -18,6 +16,6 @@ namespace Gorzdrav.Core.ViewModels
         
         public SpecialtyViewModel Specialty { get;  }
         
-        public int AvailableAppointmentsCount { get;  }
+        public int Tickets { get;  }
     }
 }

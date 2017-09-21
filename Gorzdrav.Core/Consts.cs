@@ -6,6 +6,6 @@
 
         public const string Url = "https://api.gorzdrav.spb.ru/Service/HubService.svc";
 
-        public const string ConnectionString = "data.db";
+        public const string SettingsFileName = "settings.json";
     }
 }

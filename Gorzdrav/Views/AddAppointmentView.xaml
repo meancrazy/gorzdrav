@@ -1,7 +1,7 @@
 ﻿<dialogs:CustomDialog x:Class="Gorzdrav.Views.AddAppointmentView"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
@@ -24,9 +24,9 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="200" />
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                    Style="{DynamicResource DescriptionHeaderStyle}"
-                   Content="Доступные талоны"/>
+                   Content="Доступные талоны" />
             <ComboBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                       controls:TextBoxHelper.Watermark="Специальность"
                       ItemsSource="{Binding Specialties, Mode=OneWay}"
@@ -36,6 +36,15 @@
                       Style="{DynamicResource VirtualisedMetroComboBox}"
                       controls:TextBoxHelper.UseFloatingWatermark="True"
                       controls:ComboBoxHelper.CharacterCasing="Normal">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tickets}" Value="0">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
             </ComboBox>
             <ComboBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                       controls:TextBoxHelper.Watermark="Врач"
@@ -45,18 +54,29 @@
                       DisplayMemberPath="Name"
                       Style="{DynamicResource VirtualisedMetroComboBox}"
                       controls:TextBoxHelper.UseFloatingWatermark="True">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tickets}" Value="0">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
             </ComboBox>
-            <ListView Grid.Row="7" Grid.Column="1" BorderThickness="1" 
+            <ListView Grid.Row="7" Grid.Column="1" BorderThickness="1"
                       BorderBrush="{DynamicResource TextBoxBorderBrush}"
                       ItemsSource="{Binding Appointments, Mode=OneWay}"
                       SelectedItem="{Binding Appointment, Mode=OneWayToSource}">
                 <ListView.View>
                     <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
-                        <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding DateTime, StringFormat=\{0:dd.MM.yyyy\}}"/>
-                        <GridViewColumn Header="Время" DisplayMemberBinding="{Binding DateTime, StringFormat=\{0:HH:mm\}}"/>
+                        <GridViewColumn Header="Дата"
+                                        DisplayMemberBinding="{Binding DateTime, StringFormat=\{0:dd.MM.yyyy\}}" />
+                        <GridViewColumn Header="Время"
+                                        DisplayMemberBinding="{Binding DateTime, StringFormat=\{0:HH:mm\}}" />
                     </GridView>
                 </ListView.View>
-                </ListView>
+            </ListView>
         </Grid>
     </dialogs:CustomDialog.Content>
     <dialogs:CustomDialog.DialogBottom>
@@ -65,10 +85,10 @@
                     Command="{Binding Select}"
                     Style="{DynamicResource AccentedSquareButtonStyle}"
                     controls:ControlsHelper.ContentCharacterCasing="Normal"
-                    Content="Добавить"/>
+                    Content="Добавить" />
             <Button Height="35" MinWidth="80" Margin="0 0 5 0"
                     Command="{Binding Cancel}"
-                    Content="Отмена"/>
+                    Content="Отмена" />
         </StackPanel>
     </dialogs:CustomDialog.DialogBottom>
 </dialogs:CustomDialog>

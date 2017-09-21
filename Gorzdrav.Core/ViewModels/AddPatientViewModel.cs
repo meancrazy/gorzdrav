@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 using Gorzdrav.Core.Api;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Splat;
 
 namespace Gorzdrav.Core.ViewModels
 {
     public class AddPatientViewModel : BaseViewModel
     {
-        private readonly IHubService _service;
 
         public ReactiveList<DistrictViewModel> Districts { get; } = new ReactiveList<DistrictViewModel>();
 
@@ -35,20 +33,22 @@ namespace Gorzdrav.Core.ViewModels
 
         public extern PatientViewModel SelectedPatient { [ObservableAsProperty]get; }
 
+        #region Commands
+
         public ReactiveCommand<Unit, IEnumerable<DistrictViewModel>> GetDistricts { get; }
 
         public ReactiveCommand<DistrictViewModel, IEnumerable<ClinicViewModel>> GetClinics { get; }
 
-        public ReactiveCommand<(string, ClinicViewModel), IEnumerable<PatientViewModel>> SearchPatients { get; }
+        public ReactiveCommand<Unit, IEnumerable<PatientViewModel>> SearchPatients { get; }
 
         public ReactiveCommand<Unit, PatientViewModel> Select { get; }
 
         public ReactiveCommand<Unit, Unit> Cancel { get; }
 
-        public AddPatientViewModel(IHubService service = null)
-        {
-            _service = service ?? Locator.CurrentMutable.GetService<IHubService>();
+        #endregion
 
+        public AddPatientViewModel(IHubService service = null) : base(service)
+        {
             GetDistricts = ReactiveCommand.CreateFromTask(GetDistricsImpl);
             var d0 = GetDistricts.Subscribe(districts =>
             {
@@ -71,7 +71,7 @@ namespace Gorzdrav.Core.ViewModels
 
             var d2 = this.WhenAnyValue(x => x.District).Where(x => x != null).InvokeCommand(this, x => x.GetClinics);
 
-            SearchPatients = ReactiveCommand.CreateFromTask<(string, ClinicViewModel), IEnumerable<PatientViewModel>>(SearchPatientsImpl);
+            SearchPatients = ReactiveCommand.CreateFromTask(SearchPatientsImpl);
             var d3 = SearchPatients.Subscribe(patients =>
             {
                 using (Patients.SuppressChangeNotifications())
@@ -81,9 +81,10 @@ namespace Gorzdrav.Core.ViewModels
                 }
             });
 
-            var d4 = this.WhenAnyValue(x => x.Name, x => x.Clinic, (name, clinic) => (name, clinic))
+            var d4 = this.WhenAnyValue(x => x.Name, x => x.Clinic, (name, clinic) => new { name, clinic } )
                          .Where(x => x.clinic != null && x.name?.Length > 10)
                          .Throttle(TimeSpan.FromMilliseconds(500))
+                         .Select(_ => Unit.Default)
                          .InvokeCommand(this, x => x.SearchPatients);
 
             var canSelect = this.WhenAnyValue(x => x.Patient).Select(x => x != null);
@@ -93,13 +94,19 @@ namespace Gorzdrav.Core.ViewModels
             Cancel = ReactiveCommandEx.CreateEmpty();
             
             var d6 = Districts.ShouldReset.Merge(Clinics.ShouldReset).Merge(Patients.ShouldReset).Subscribe();
-            
-            InitCleanup(d0, d1, d2, d3, d4, d5, d6);
+
+            var d7 = GetDistricts.ThrownExceptions
+                                 .Merge(GetClinics.ThrownExceptions)
+                                 .Merge(SearchPatients.ThrownExceptions)
+                                 .SelectMany(x => Interactions.Exceptions.Handle(x))
+                                 .Subscribe();
+
+            InitCleanup(d0, d1, d2, d3, d4, d5, d6, d7);
         }
 
-        private async Task<IEnumerable<PatientViewModel>> SearchPatientsImpl((string name, ClinicViewModel clinic) arg)
+        private async Task<IEnumerable<PatientViewModel>> SearchPatientsImpl()
         {
-            var names = arg.name.Split(new [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var names = Name.Split(new [] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             var patient = new Patient();
             if (names.Length > 0)
@@ -111,21 +118,21 @@ namespace Gorzdrav.Core.ViewModels
             if (names.Length > 2)
                 patient.SecondName = $"{names[2]}%";
 
-            var result = await _service.SearchTop10PatientAsync(patient, arg.clinic.Id, Consts.Id, null);
+            var result = await Service.SearchTop10PatientAsync(patient, Clinic.Id, Consts.Id, null);
             
-            return result.ListPatient.Select(x => new PatientViewModel{Id = x.IdPat, Clinic = arg.clinic, Name = x.Name, Surname = x.Surname, SecondName = x.SecondName, Birthday = x.Birthday});
+            return result.ListPatient.Select(x => new PatientViewModel{Id = x.IdPat, Clinic = Clinic, Name = x.Name, Surname = x.Surname, SecondName = x.SecondName, Birthday = x.Birthday});
         }
 
         private async Task<IEnumerable<ClinicViewModel>> GetClinicsImpl(DistrictViewModel district)
         {
-            var result = await _service.GetLPUListAsync(district.Id, Consts.Id, null);
+            var result = await Service.GetLPUListAsync(district.Id, Consts.Id, null);
 
             return result.ListLPU.Select(x => new ClinicViewModel{ Id = x.IdLPU, Name = x.LPUFullName, District = district});
         }
 
         private async Task<IEnumerable<DistrictViewModel>> GetDistricsImpl()
         {
-            var result = await _service.GetDistrictListAsync(Consts.Id, null);
+            var result = await Service.GetDistrictListAsync(Consts.Id, null);
             return result.Select(x => new DistrictViewModel { Id = x.IdDistrict, Name = x.DistrictName });
         }
     }
