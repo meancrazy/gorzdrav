@@ -9,11 +9,22 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance {x:Type vm:SettingsViewModel}, d:IsDesignTimeCreatable=False}">
     <dialogs:CustomDialog.Content>
-        <StackPanel>
-            <ListView BorderThickness="1"
+        <Grid Margin="0 10 0 0"  Width="400">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="200" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}">Настройки</Label>
+            <ToolBar Grid.Row="1" Height="32">
+                <Button Content="Добавить" Command="{Binding Add}" />
+                <Button Content="Удалить" Command="{Binding Delete}" />
+            </ToolBar>
+            <ListView Grid.Row="2" BorderThickness="1"
                       BorderBrush="{DynamicResource TextBoxBorderBrush}"
                       ItemsSource="{Binding Patients, Mode=OneWay}"
-                      SelectedItem="{Binding SelectedPatient}">
+                      SelectedItem="{Binding SelectedPatient, Mode=TwoWay}"
+                      Margin="5">
                 <ListView.View>
                     <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
                         <GridViewColumn Header="Фамилия" DisplayMemberBinding="{Binding Surname}"/>
@@ -23,9 +34,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Content="Добавить" Command="{Binding Add}"/>
-            <Button Content="Удалить" Command="{Binding Delete}"/>
-        </StackPanel>
+        </Grid>
     </dialogs:CustomDialog.Content>
     <dialogs:CustomDialog.DialogBottom>
         <StackPanel Height="45" HorizontalAlignment="Right" Orientation="Horizontal">

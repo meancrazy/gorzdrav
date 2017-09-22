@@ -22,37 +22,44 @@
         </ma:WindowCommands>
     </ma:MetroWindow.RightWindowCommands>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}"
+        <Grid Panel.ZIndex="1000" Visibility="{Binding Initialized, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity=".5"/>
+            </Grid.Background>
+        </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}"
                Content="{Binding Settings.SelectedPatient.FullName}" />
-        <Label Grid.Row="1" Style="{DynamicResource DescriptionHeaderStyle}"
+            <Label Grid.Row="1" Style="{DynamicResource DescriptionHeaderStyle}"
                Content="{Binding Settings.SelectedPatient.Clinic.Name}" />
-        <ToolBar Grid.Row="2" Height="32">
-            <Button Content="Добавить" Command="{Binding AddAppointment}"
+            <ToolBar Grid.Row="2" Height="32">
+                <Button Content="Добавить" Command="{Binding AddAppointment}"
                     CommandParameter="{Binding Settings.SelectedPatient}" />
-            <Button Content="Удалить" Command="{Binding DeleteAppointment}"
+                <Button Content="Удалить" Command="{Binding DeleteAppointment}"
                                       CommandParameter="{Binding HistoryVisit}" />
-            <Button Content="Обновить" Command="{Binding GetAppointments}" />
-        </ToolBar>
-        <ListView Grid.Row="3" BorderThickness="1"
+                <Button Content="Обновить" Command="{Binding GetAppointments}" />
+            </ToolBar>
+            <ListView Grid.Row="3" BorderThickness="1"
                   BorderBrush="{DynamicResource TextBoxBorderBrush}"
                   Margin="10,10,10,30"
                   ItemsSource="{Binding HistoryVisits, Mode=OneWay}"
                   SelectedItem="{Binding HistoryVisit, Mode=OneWayToSource}">
-            <ListView.View>
-                <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
-                    <GridViewColumn Header="Время"
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
+                        <GridViewColumn Header="Время"
                                     DisplayMemberBinding="{Binding VisitStart, StringFormat=\{0:dd.MM.yyyy HH:mm\}}" />
-                    <GridViewColumn Header="Врач" DisplayMemberBinding="{Binding DoctorRendingConsultation.Name}" />
-                    <GridViewColumn Header="Специальность"
+                        <GridViewColumn Header="Врач" DisplayMemberBinding="{Binding DoctorRendingConsultation.Name}" />
+                        <GridViewColumn Header="Специальность"
                                     DisplayMemberBinding="{Binding SpecialityRendingConsultation.NameSpesiality}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
     </Grid>
 </ma:MetroWindow>

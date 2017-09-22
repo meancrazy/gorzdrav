@@ -9,7 +9,7 @@
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance {x:Type viewModels:AddAppointmentViewModel}, d:IsDesignTimeCreatable=False}">
     <dialogs:CustomDialog.Content>
-        <Grid Margin="0 10 0 0">
+        <Grid Margin="0 10 0 0" Width="400">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />

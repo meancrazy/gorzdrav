@@ -21,6 +21,8 @@ namespace Gorzdrav.Core.ViewModels
         [Reactive]
         public HistoryVisit HistoryVisit { get; set; }
 
+        public extern bool Initialized { [ObservableAsProperty] get; }
+
         #endregion
 
         #region Commands
@@ -58,28 +60,30 @@ namespace Gorzdrav.Core.ViewModels
             
             var d2 = HistoryVisits.ShouldReset.Subscribe();
 
-            var canInitialize = this.WhenAnyValue(x => x.Settings.SelectedPatient).Select(x => x == null).DistinctUntilChanged();
-            
+            var canInitialize = this.WhenAnyValue(x => x.Settings.SelectedPatient).Select(x => x == null);
+
+            var d3 = canInitialize.ToPropertyEx(this, x => x.Initialized);
+
             AddPatient = Interactions.AddPatient.ToReactiveCommand(canInitialize);
-            var d3 = AddPatient.BindTo(this, x => x.Settings.SelectedPatient);
+            var d4 = AddPatient.BindTo(this, x => x.Settings.SelectedPatient);
 
             var canDeleteAppointment = this.WhenAnyValue(x => x.HistoryVisit).Select(x => x != null);
             DeleteAppointment = ReactiveCommand.CreateFromTask<HistoryVisit, Unit>(DeleteAppointmentImpl, canDeleteAppointment);
-            var d4 = DeleteAppointment.Subscribe(x => HistoryVisits.Remove(HistoryVisit));
+            var d5 = DeleteAppointment.Subscribe(x => HistoryVisits.Remove(HistoryVisit));
             
             AddAppointment = Interactions.AddAppointment.ToReactiveCommand(hasPatient);
 
-            var d5 = AddAppointment.InvokeCommand(GetAppointments);
+            var d6 = AddAppointment.InvokeCommand(GetAppointments);
 
             ShowSettings = Interactions.ShowSettings.ToReactiveCommand();
 
-            var d6 = GetAppointments.ThrownExceptions
+            var d7 = GetAppointments.ThrownExceptions
                                     .Merge(DeleteAppointment.ThrownExceptions)
                                     .Merge(AddAppointment.ThrownExceptions)
                                     .SelectMany(x => Interactions.Exceptions.Handle(x))
                                     .Subscribe();
 
-            InitCleanup(d0, d1, d2, d3, d4, d5, d6);
+            InitCleanup(d0, d1, d2, d3, d4, d5, d6, d7);
         }
 
         private async Task<Unit> DeleteAppointmentImpl(HistoryVisit historyVisit)

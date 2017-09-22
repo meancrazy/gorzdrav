@@ -54,7 +54,7 @@ namespace Gorzdrav.Core.ViewModels
             Add = Interactions.AddPatient.ToReactiveCommand();
             var d1 = Add.Subscribe(patient =>
             {
-                if (Patients.Contains(patient))
+                if (patient == null || Patients.Contains(patient))
                     return;
 
                 Patients.Add(patient);
