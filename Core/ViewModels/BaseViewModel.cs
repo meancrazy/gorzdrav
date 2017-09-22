@@ -23,9 +23,25 @@ namespace Gorzdrav.Core.ViewModels
 
         public void Dispose()
         {
-            this.Log().Info($"Disposing {GetType().Name}");
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+         
+        ~BaseViewModel()
+        { 
+            Dispose(false);
+        }
+        
+        private void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
             
-            _cleanup?.Dispose();
+            if (_cleanup == null)
+                return;
+
+            _cleanup.Dispose();
+            _cleanup = null;
         }
     }
 }
