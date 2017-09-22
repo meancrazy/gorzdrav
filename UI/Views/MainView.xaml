@@ -26,6 +26,10 @@
             <Grid.Background>
                 <SolidColorBrush Color="Black" Opacity=".5"/>
             </Grid.Background>
+            <TextBlock HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       FontSize="26" 
+                       Text="Пожалуйста, добавьте нового пациента в настройках."/>
         </Grid>
         <Grid>
             <Grid.RowDefinitions>

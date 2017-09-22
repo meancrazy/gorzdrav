@@ -13,7 +13,7 @@ namespace Gorzdrav.Core.ViewModels
 
         protected BaseViewModel()
         {
-            Service =  Locator.CurrentMutable.GetService<IHubService>();
+            Service = Locator.CurrentMutable.GetService<IHubService>();
         }
 
         protected void InitCleanup(params IDisposable[] args)
@@ -21,27 +21,31 @@ namespace Gorzdrav.Core.ViewModels
             _cleanup = new CompositeDisposable(args);
         }
 
+        #region IDisposable
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-         
+
         ~BaseViewModel()
-        { 
+        {
             Dispose(false);
         }
-        
+
         private void Dispose(bool disposing)
         {
             if (!disposing)
                 return;
-            
+
             if (_cleanup == null)
                 return;
 
             _cleanup.Dispose();
             _cleanup = null;
         }
+
+        #endregion
     }
 }

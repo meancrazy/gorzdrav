@@ -139,9 +139,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="FodyWeavers.xml">
+    <None Include="FodyWeavers.xml">
       <SubType>Designer</SubType>
-    </Resource>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
