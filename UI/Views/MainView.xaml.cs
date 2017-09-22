@@ -9,7 +9,7 @@ using Gorzdrav.Core.ViewModels;
 using MahApps.Metro.Controls.Dialogs;
 using ReactiveUI;
 
-namespace Gorzdrav.Views
+namespace Gorzdrav.UI.Views
 {
     public partial class MainView : IViewFor<MainViewModel>
     {

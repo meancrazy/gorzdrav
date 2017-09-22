@@ -5,7 +5,7 @@ using Gorzdrav.Core.ViewModels;
 using MahApps.Metro.Controls;
 using ReactiveUI;
 
-namespace Gorzdrav.Views
+namespace Gorzdrav.UI.Views
 {
     public partial class SettingsView : IViewFor<SettingsViewModel>
     {

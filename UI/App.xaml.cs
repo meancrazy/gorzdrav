@@ -2,11 +2,11 @@
 using Gorzdrav.Core;
 using Gorzdrav.Core.Api;
 using Gorzdrav.Core.ViewModels;
-using Gorzdrav.Views;
+using Gorzdrav.UI.Views;
 using ReactiveUI;
 using Splat;
 
-namespace Gorzdrav
+namespace Gorzdrav.UI
 {
     public partial class App
     {

@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{60F25324-50B9-4E11-9273-7BAF48F06EF9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Gorzdrav</RootNamespace>
+    <RootNamespace>Gorzdrav.UI</RootNamespace>
     <AssemblyName>Gorzdrav</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -137,9 +137,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gorzdrav.Core\Gorzdrav.Core.csproj">
+    <ProjectReference Include="..\Gorzdrav.Core\Core.csproj">
       <Project>{f5191311-055f-4fa9-b878-30214439fc54}</Project>
-      <Name>Gorzdrav.Core</Name>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
