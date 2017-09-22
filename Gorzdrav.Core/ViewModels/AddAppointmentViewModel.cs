@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Gorzdrav.Core.Api;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -34,9 +33,7 @@ namespace Gorzdrav.Core.ViewModels
 
         [Reactive]
         public AppointmentViewModel Appointment { get; set; }
-
-        public extern AppointmentViewModel SelectedAppointment { [ObservableAsProperty]get; }
-
+        
         #endregion
 
         #region Commands
@@ -45,16 +42,16 @@ namespace Gorzdrav.Core.ViewModels
 
         public ReactiveCommand<SpecialtyViewModel, IEnumerable<DoctorViewModel>> GetDoctors { get; }
         
-        public ReactiveCommand<Unit, IEnumerable<AppointmentViewModel>> GetAppointments { get; }
+        public ReactiveCommand<DoctorViewModel, IEnumerable<AppointmentViewModel>> GetAppointments { get; }
 
-        public ReactiveCommand<Unit, AppointmentViewModel> Select { get; }
+        public ReactiveCommand<AppointmentViewModel, Unit> Select { get; }
 
         public ReactiveCommand<Unit, Unit> Cancel { get; }
 
 
         #endregion
 
-        public AddAppointmentViewModel(PatientViewModel patient, IHubService service = null) : base(service)
+        public AddAppointmentViewModel(PatientViewModel patient)
         {
             _patient = patient;
 
@@ -94,8 +91,8 @@ namespace Gorzdrav.Core.ViewModels
             });
 
             var d4 = this.WhenAnyValue(x => x.Specialty).InvokeCommand(this, x => x.GetDoctors);
-
-            GetAppointments = ReactiveCommand.CreateFromTask(GetAppointmentsImpl);
+            
+            GetAppointments = ReactiveCommand.CreateFromTask<DoctorViewModel, IEnumerable<AppointmentViewModel>>(GetAppointmentsImpl);
             var d5 = GetAppointments.Subscribe(list =>
             {
                 using (Appointments.SuppressChangeNotifications())
@@ -114,32 +111,43 @@ namespace Gorzdrav.Core.ViewModels
             var d6 = this.WhenAnyValue(x => x.Doctor)
                          .DistinctUntilChanged()
                          .Throttle(TimeSpan.FromSeconds(0.1))
-                         .Select(_ => Unit.Default)
                          .InvokeCommand(this, x => x.GetAppointments);
 
             var canSelect = this.WhenAnyValue(x => x.Appointment).Select(x => x != null);
-            Select = ReactiveCommand.Create<Unit, AppointmentViewModel>(_ => Appointment, canSelect);
-            var d7 = Select.ToPropertyEx(this, x => x.SelectedAppointment);
+            Select = ReactiveCommand.CreateFromTask<AppointmentViewModel, Unit>(SelectImpl, canSelect);
             
             Cancel = ReactiveCommandEx.CreateEmpty();
 
-            var d8 = Specialties.ShouldReset.Merge(Doctors.ShouldReset).Subscribe();
+            var d7 = Specialties.ShouldReset.Merge(Doctors.ShouldReset).Subscribe();
 
-            var d9 = GetSpecialties.ThrownExceptions
+            var d8 = GetSpecialties.ThrownExceptions
                                    .Merge(GetDoctors.ThrownExceptions)
                                    .Merge(GetAppointments.ThrownExceptions)
+                                   .Merge(Select.ThrownExceptions)
                                    .SelectMany(x => Interactions.Exceptions.Handle(x))
                                    .Subscribe();
 
-            InitCleanup(d0, d1, d2, d3, d5, d4, d6, d7, d8, d9);
+            InitCleanup(d0, d1, d2, d3, d5, d4, d6, d7, d8);
         }
 
-        private async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsImpl()
+        private async Task<Unit> SelectImpl(AppointmentViewModel appointment)
         {
-            if (Doctor == null)
+            var result = await Service.SetAppointmentAsync(appointment.Id, _patient.Clinic.Id, _patient.Id, null, Consts.Id, null);
+
+            result.Check();
+
+            return Unit.Default;
+        }
+
+        private async Task<IEnumerable<AppointmentViewModel>> GetAppointmentsImpl(DoctorViewModel doctor)
+        {
+            // clear appointments if doctor is null
+            if (doctor == null)
                 return null;
 
-            var result = await Service.GetAvaibleAppointmentsAsync(Doctor.Id, _patient.Clinic.Id, _patient.Id, DateTime.Today, DateTime.Today.AddMonths(1).AddDays(-1), Consts.Id, null);
+            var result = await Service.GetAvaibleAppointmentsAsync(doctor.Id, _patient.Clinic.Id, _patient.Id, DateTime.Today, DateTime.Today.AddMonths(1).AddDays(-1), Consts.Id, null);
+
+            result.Check();
 
             return result.ListAppointments.Select(x => new AppointmentViewModel(x.IdAppointment, x.VisitStart, Doctor));
         }
@@ -150,12 +158,17 @@ namespace Gorzdrav.Core.ViewModels
                 return null;
 
             var result = await Service.GetDoctorListAsync(specialty.Id, _patient.Clinic.Id, _patient.Id, Consts.Id, null);
+
+            result.Check();
+
             return result.Docs.Select(x => new DoctorViewModel(x.IdDoc, x.Name, Specialty, x.CountFreeParticipantIE));
         }
 
         private async Task<IEnumerable<SpecialtyViewModel>> GetSpecialtiesImpl()
         {
             var result = await Service.GetSpesialityListAsync(_patient.Clinic.Id, _patient.Id, Consts.Id, null);
+
+            result.Check();
 
             return result.ListSpesiality.Select(x => new SpecialtyViewModel(x.IdSpesiality, x.NameSpesiality, x.CountFreeParticipantIE));
         }

@@ -27,8 +27,19 @@ namespace Gorzdrav.Views
             yield return Interactions.Exceptions.RegisterHandler(ShowException);
             yield return Interactions.AddPatient.RegisterHandler(ShowAddPatientView);
             yield return Interactions.AddAppointment.RegisterHandler(ShowAddAppointmentView);
+            yield return Interactions.ShowSettings.RegisterHandler(ShowSettings);
 
             yield return Observable.Return(Unit.Default).InvokeCommand(ViewModel, x => x.AddPatient);
+        }
+
+        private async Task ShowSettings(InteractionContext<SettingsViewModel, Unit> interaction)
+        {
+            var view = new SettingsView(this, interaction.Input);
+
+            await this.ShowMetroDialogAsync(view);
+            await view.WaitUntilUnloadedAsync();
+
+            interaction.SetOutput(Unit.Default);
         }
 
         private async Task ShowException(InteractionContext<Exception, Unit> interaction)
@@ -38,7 +49,7 @@ namespace Gorzdrav.Views
             interaction.SetOutput(Unit.Default);
         }
 
-        private async Task ShowAddAppointmentView(InteractionContext<PatientViewModel, AppointmentViewModel> interaction)
+        private async Task ShowAddAppointmentView(InteractionContext<PatientViewModel, Unit> interaction)
         {
             var viewModel = new AddAppointmentViewModel(interaction.Input);
 
@@ -47,7 +58,7 @@ namespace Gorzdrav.Views
             await this.ShowMetroDialogAsync(view);
             await view.WaitUntilUnloadedAsync();
 
-            interaction.SetOutput(viewModel.SelectedAppointment);
+            interaction.SetOutput(Unit.Default);
         }
 
         private async Task ShowAddPatientView(InteractionContext<Unit, PatientViewModel> interaction)

@@ -11,9 +11,9 @@ namespace Gorzdrav.Core.ViewModels
         private CompositeDisposable _cleanup;
         protected readonly IHubService Service;
 
-        protected BaseViewModel(IHubService service = null)
+        protected BaseViewModel()
         {
-            Service = service;
+            Service =  Locator.CurrentMutable.GetService<IHubService>();
         }
 
         protected void InitCleanup(params IDisposable[] args)

@@ -37,13 +37,19 @@ namespace Gorzdrav.Core.ViewModels
 
         public ReactiveCommand<Unit, Unit> Delete { get; }
 
+        public ReactiveCommand<Unit, Unit> Close { get; }
+
         public SettingsViewModel()
         {
             LoadSettings();
 
             var save = ReactiveCommand.Create(SaveSettings);
 
-            var d0 = this.WhenAnyValue(x => x.SelectedPatient).Skip(1).DistinctUntilChanged().Select(_ => Unit.Default).InvokeCommand(save);
+            var d0 = this.ObservableForProperty(x => x.SelectedPatient)
+                         .DistinctUntilChanged().Select(_ => Unit.Default)
+                         .Merge(Patients.Changed.Select(_ => Unit.Default))
+                         .Throttle(TimeSpan.FromSeconds(0.3))
+                         .InvokeCommand(save);
             
             Add = Interactions.AddPatient.ToReactiveCommand();
             var d1 = Add.Subscribe(patient =>
@@ -58,6 +64,8 @@ namespace Gorzdrav.Core.ViewModels
             {
                 Patients.Remove(SelectedPatient);
             });
+            
+            Close = ReactiveCommandEx.CreateEmpty();
 
             InitCleanup(d0, d1);
         }
@@ -69,6 +77,11 @@ namespace Gorzdrav.Core.ViewModels
                 Patient = SelectedPatient,
                 Patients = Patients,
             };
+
+            if (File.Exists(Consts.SettingsFileName))
+            {
+                File.Delete(Consts.SettingsFileName);
+            }
 
             using (var stream = File.OpenWrite(Consts.SettingsFileName))
             {

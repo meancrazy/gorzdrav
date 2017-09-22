@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Gorzdrav.Core.Api;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Splat;
 
 namespace Gorzdrav.Core.ViewModels
 {
@@ -28,15 +27,17 @@ namespace Gorzdrav.Core.ViewModels
         
         public ReactiveCommand<Unit, List<HistoryVisit>> GetAppointments { get; }
 
-        public ReactiveCommand<PatientViewModel, AppointmentViewModel> AddAppointment { get; }
+        public ReactiveCommand<PatientViewModel, Unit> AddAppointment { get; }
 
-        public ReactiveCommand<Unit, Unit> DeleteAppointment { get; }
+        public ReactiveCommand<HistoryVisit, Unit> DeleteAppointment { get; }
 
         public ReactiveCommand<Unit, PatientViewModel> AddPatient { get; }
 
+        public ReactiveCommand<SettingsViewModel, Unit> ShowSettings { get; }
+
         #endregion
 
-        public MainViewModel(IHubService service = null) : base(service)
+        public MainViewModel()
         {
             Settings = new SettingsViewModel();
 
@@ -44,7 +45,7 @@ namespace Gorzdrav.Core.ViewModels
 
             GetAppointments = ReactiveCommand.CreateFromTask(GetAppointmentsImpl, hasPatient);
 
-            var d1 = GetAppointments.Subscribe(list =>
+            var d0 = GetAppointments.Subscribe(list =>
             {
                 using (HistoryVisits.SuppressChangeNotifications())
                 {
@@ -53,42 +54,50 @@ namespace Gorzdrav.Core.ViewModels
                 }
             });
 
-            var d2 = this.WhenAnyValue(x => x.Settings.SelectedPatient).Where(x => x != null).Select(x => Unit.Default).InvokeCommand(this, x => x.GetAppointments);
+            var d1 = this.WhenAnyValue(x => x.Settings.SelectedPatient).Where(x => x != null).Select(x => Unit.Default).InvokeCommand(this, x => x.GetAppointments);
             
-            var d3 = HistoryVisits.ShouldReset.Subscribe();
+            var d2 = HistoryVisits.ShouldReset.Subscribe();
 
             var canInitialize = this.WhenAnyValue(x => x.Settings.SelectedPatient).Select(x => x == null).DistinctUntilChanged();
             
             AddPatient = Interactions.AddPatient.ToReactiveCommand(canInitialize);
-            var d4 = AddPatient.BindTo(this, x => x.Settings.SelectedPatient);
+            var d3 = AddPatient.BindTo(this, x => x.Settings.SelectedPatient);
 
             var canDeleteAppointment = this.WhenAnyValue(x => x.HistoryVisit).Select(x => x != null);
-            DeleteAppointment = ReactiveCommand.CreateFromTask(DeleteAppointmentImpl, canDeleteAppointment);
-            var d5 = DeleteAppointment.Subscribe(x => HistoryVisits.Remove(HistoryVisit));
+            DeleteAppointment = ReactiveCommand.CreateFromTask<HistoryVisit, Unit>(DeleteAppointmentImpl, canDeleteAppointment);
+            var d4 = DeleteAppointment.Subscribe(x => HistoryVisits.Remove(HistoryVisit));
             
             AddAppointment = Interactions.AddAppointment.ToReactiveCommand(hasPatient);
 
+            var d5 = AddAppointment.InvokeCommand(GetAppointments);
+
+            ShowSettings = Interactions.ShowSettings.ToReactiveCommand();
+
             var d6 = GetAppointments.ThrownExceptions
-                                    .Merge(AddPatient.ThrownExceptions)
                                     .Merge(DeleteAppointment.ThrownExceptions)
                                     .Merge(AddAppointment.ThrownExceptions)
                                     .SelectMany(x => Interactions.Exceptions.Handle(x))
                                     .Subscribe();
 
-            InitCleanup(d1, d2, d3, d4, d5, d6);
+            InitCleanup(d0, d1, d2, d3, d4, d5, d6);
         }
 
-        private async Task DeleteAppointmentImpl()
+        private async Task<Unit> DeleteAppointmentImpl(HistoryVisit historyVisit)
         {
-            await Service.CreateClaimForRefusalAsync(Settings.SelectedPatient.Clinic.Id, Settings.SelectedPatient.Id, HistoryVisit.IdAppointment, Consts.Id, null);
+            var result = await Service.CreateClaimForRefusalAsync(Settings.SelectedPatient.Clinic.Id, Settings.SelectedPatient.Id, historyVisit.IdAppointment, Consts.Id, null);
+
+            result.Check();
+
+            return Unit.Default;
         }
 
         private async Task<List<HistoryVisit>> GetAppointmentsImpl()
         {
-            this.Log().Info($"GetAppointments({Settings.SelectedPatient.FullName}, {Settings.SelectedPatient.Clinic.Name})");
-            var history = await Service.GetPatientHistoryAsync(Settings.SelectedPatient.Clinic.Id, Settings.SelectedPatient.Id, Consts.Id, null);
+            var result = await Service.GetPatientHistoryAsync(Settings.SelectedPatient.Clinic.Id, Settings.SelectedPatient.Id, Consts.Id, null);
 
-            return history.ListHistoryVisit;
+            result.Check();
+
+            return result.ListHistoryVisit;
         }
     }
 }

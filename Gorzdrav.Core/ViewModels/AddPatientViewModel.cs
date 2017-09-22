@@ -47,7 +47,7 @@ namespace Gorzdrav.Core.ViewModels
 
         #endregion
 
-        public AddPatientViewModel(IHubService service = null) : base(service)
+        public AddPatientViewModel()
         {
             GetDistricts = ReactiveCommand.CreateFromTask(GetDistricsImpl);
             var d0 = GetDistricts.Subscribe(districts =>
@@ -119,6 +119,8 @@ namespace Gorzdrav.Core.ViewModels
                 patient.SecondName = $"{names[2]}%";
 
             var result = await Service.SearchTop10PatientAsync(patient, Clinic.Id, Consts.Id, null);
+
+            result.Check();
             
             return result.ListPatient.Select(x => new PatientViewModel{Id = x.IdPat, Clinic = Clinic, Name = x.Name, Surname = x.Surname, SecondName = x.SecondName, Birthday = x.Birthday});
         }
@@ -126,6 +128,8 @@ namespace Gorzdrav.Core.ViewModels
         private async Task<IEnumerable<ClinicViewModel>> GetClinicsImpl(DistrictViewModel district)
         {
             var result = await Service.GetLPUListAsync(district.Id, Consts.Id, null);
+            
+            result.Check();
 
             return result.ListLPU.Select(x => new ClinicViewModel{ Id = x.IdLPU, Name = x.LPUFullName, District = district});
         }
@@ -133,6 +137,7 @@ namespace Gorzdrav.Core.ViewModels
         private async Task<IEnumerable<DistrictViewModel>> GetDistricsImpl()
         {
             var result = await Service.GetDistrictListAsync(Consts.Id, null);
+            
             return result.Select(x => new DistrictViewModel { Id = x.IdDistrict, Name = x.DistrictName });
         }
     }
