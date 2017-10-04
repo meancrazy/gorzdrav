@@ -51,7 +51,7 @@
             </ToolBar>
             <ListView Grid.Row="3" BorderThickness="1"
                   BorderBrush="{DynamicResource TextBoxBorderBrush}"
-                  Margin="10,10,10,30"
+                  Margin="10, 10, 10, 30"
                   ItemsSource="{Binding HistoryVisits, Mode=OneWay}"
                   SelectedItem="{Binding HistoryVisit, Mode=OneWayToSource}">
                 <ListView.View>

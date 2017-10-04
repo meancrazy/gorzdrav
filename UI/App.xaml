@@ -14,21 +14,14 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
             <Style x:Key="DescriptionHeaderStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="22" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
             </Style>
-
             <Style x:Key="MetroGridViewColumnHeaderNoCasing" TargetType="GridViewColumnHeader" BasedOn="{StaticResource MetroGridViewColumnHeader}">
                 <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal" />
             </Style>
-            
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
-
 </Application>
-
-
-

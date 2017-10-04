@@ -8,55 +8,53 @@
                          xmlns:vm="clr-namespace:Gorzdrav.Core.ViewModels;assembly=Gorzdrav.Core"
                          mc:Ignorable="d"
                          d:DataContext="{d:DesignInstance {x:Type vm:AddPatientViewModel}, d:IsDesignTimeCreatable=False}">
-    <dialogs:CustomDialog.Content>
-        <Grid Margin="0 10 0 0"  Width="400">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="200" />
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}">Добавление нового пациента</Label>
-            <ComboBox Grid.Row="1"
-                      ItemsSource="{Binding Districts, Mode=OneWay}"
-                      SelectedItem="{Binding District, Mode=OneWayToSource}"
-                      controls:TextBoxHelper.Watermark="Район"
-                      Margin="0,0,0,4"
-                      DisplayMemberPath="Name"
-                      Style="{DynamicResource VirtualisedMetroComboBox}"
-                      controls:TextBoxHelper.UseFloatingWatermark="True"
-                      controls:ComboBoxHelper.CharacterCasing="Normal">
-            </ComboBox>
-            <ComboBox Grid.Row="2"
-                      ItemsSource="{Binding Clinics, Mode=OneWay}"
-                      SelectedItem="{Binding Clinic, Mode=OneWayToSource}"
-                      controls:TextBoxHelper.Watermark="Клиника"
-                      Margin="0,0,0,4"
-                      DisplayMemberPath="Name"
-                      Style="{DynamicResource VirtualisedMetroComboBox}"
-                      controls:TextBoxHelper.UseFloatingWatermark="True">
-            </ComboBox>
-            <TextBox Grid.Row="3" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                     controls:TextBoxHelper.Watermark="ФИО"
-                     controls:TextBoxHelper.UseFloatingWatermark="True"
-                     Margin="0,0,0,4" />
-            <ListView Grid.Row="4" 
-                      ItemsSource="{Binding Patients, Mode=OneWay}"
-                      SelectedItem="{Binding Patient, Mode=OneWayToSource}"
-                      BorderThickness="1" 
-                      BorderBrush="{DynamicResource TextBoxBorderBrush}">
-                <ListView.View>
-                    <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
-                        <GridViewColumn Header="Фамилия" DisplayMemberBinding="{Binding Surname}"/>
-                        <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" />
-                        <GridViewColumn Header="Отчество" DisplayMemberBinding="{Binding SecondName}" />
-                        <GridViewColumn Header="День рождения" DisplayMemberBinding="{Binding Birthday, StringFormat=\{0:dd.MM.yyyy\}}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </Grid>
-    </dialogs:CustomDialog.Content>
+    <Grid Margin="0, 10, 0, 0"  Width="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="200" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Style="{DynamicResource DescriptionHeaderStyle}">Добавление нового пациента</Label>
+        <ComboBox Grid.Row="1"
+                    ItemsSource="{Binding Districts, Mode=OneWay}"
+                    SelectedItem="{Binding District, Mode=OneWayToSource}"
+                    controls:TextBoxHelper.Watermark="Район"
+                    Margin="0, 0, 0, 4"
+                    DisplayMemberPath="Name"
+                    Style="{DynamicResource VirtualisedMetroComboBox}"
+                    controls:TextBoxHelper.UseFloatingWatermark="True"
+                    controls:ComboBoxHelper.CharacterCasing="Normal">
+        </ComboBox>
+        <ComboBox Grid.Row="2"
+                    ItemsSource="{Binding Clinics, Mode=OneWay}"
+                    SelectedItem="{Binding Clinic, Mode=OneWayToSource}"
+                    controls:TextBoxHelper.Watermark="Клиника"
+                    Margin="0, 0, 0, 4"
+                    DisplayMemberPath="Name"
+                    Style="{DynamicResource VirtualisedMetroComboBox}"
+                    controls:TextBoxHelper.UseFloatingWatermark="True">
+        </ComboBox>
+        <TextBox Grid.Row="3" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                    controls:TextBoxHelper.Watermark="ФИО"
+                    controls:TextBoxHelper.UseFloatingWatermark="True"
+                    Margin="0, 0, 0, 4" />
+        <ListView Grid.Row="4" 
+                    ItemsSource="{Binding Patients, Mode=OneWay}"
+                    SelectedItem="{Binding Patient, Mode=OneWayToSource}"
+                    BorderThickness="1" 
+                    BorderBrush="{DynamicResource TextBoxBorderBrush}">
+            <ListView.View>
+                <GridView ColumnHeaderContainerStyle="{DynamicResource MetroGridViewColumnHeaderNoCasing}">
+                    <GridViewColumn Header="Фамилия" DisplayMemberBinding="{Binding Surname}"/>
+                    <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Отчество" DisplayMemberBinding="{Binding SecondName}" />
+                    <GridViewColumn Header="День рождения" DisplayMemberBinding="{Binding Birthday, StringFormat=\{0:dd.MM.yyyy\}}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
     <dialogs:CustomDialog.DialogBottom>
         <StackPanel Height="45" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Height="35" MinWidth="80" Margin="0 0 5 0" 
